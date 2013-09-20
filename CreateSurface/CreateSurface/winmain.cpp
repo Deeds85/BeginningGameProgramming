@@ -22,6 +22,8 @@ LPDIRECT3DDEVICE9 d3ddev = NULL;
 LPDIRECT3DSURFACE9 backbuffer = NULL;
 LPDIRECT3DSURFACE9 surface = NULL;
 
+RECT rect;
+
 bool gameover = false;
 
 //Game Initialization Function
@@ -86,6 +88,14 @@ bool Game_Init(HWND hwnd)
 	//make sure the image was loaded okay
 	if(!SUCCEEDED(result)) return false;
 
+	//create pointer to the back buffer
+	d3ddev->GetBackBuffer(0,0,D3DBACKBUFFER_TYPE_MONO, &backbuffer);
+
+	rect.left = 0;
+	rect.right = SCREENW / 2;
+	rect.top = 0;
+	rect.bottom = SCREENH / 2;
+
 	return true;
 }
 
@@ -93,21 +103,13 @@ bool Game_Init(HWND hwnd)
 void Game_Run(HWND hwnd)
 {
 	// make sure the Direct3D device is valid
-	if(!d3ddev) return;
-
-	//create pointer to the back buffer
-	d3ddev->GetBackBuffer(0,0,D3DBACKBUFFER_TYPE_MONO, &backbuffer);
+	if(!d3ddev) return;	
 
 	//start rendering
 	if(d3ddev->BeginScene())
 	{
 		//draw surface to the backbuffer
-		//RECT rect;
-		//rect.left = 0;
-		//rect.right = SCREENW * 2;
-		//rect.top = 0;
-		//rect.bottom = SCREENH * 2;
-		d3ddev->StretchRect(surface, NULL, backbuffer, NULL, D3DTEXF_NONE);
+		d3ddev->StretchRect(surface, NULL , backbuffer, &rect, D3DTEXF_NONE);
 
 		//stop rendering
 		d3ddev->EndScene();
